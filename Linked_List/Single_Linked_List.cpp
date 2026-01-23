@@ -8,144 +8,145 @@ struct node
     //---
     node *next;
 };
-node *getNewNode(int val){
-    // allocate mem for node
-    node *newNode = new node;
 
-    // fill node structure
-    newNode->data = val;
-    newNode->next = nullptr;
-
-    // return this new node
-    return newNode;
-}
-
-int getLastNodeData(node *ptr)
+class LinkedList
 {
-    int val = 0;
-    node *newNode = ptr;
-    while(newNode != nullptr){
-        val = newNode->data;
-        //---
-        newNode = newNode->next;
-    }
-    return val;
-}
-int nodesCount(node *ptr)
-{
-    node *newNode = ptr;
-    int count = 0;
-    while(newNode != nullptr){
-        ++count;
-        //---
-        newNode = newNode->next;
-    }
-    return count;
-}
-void traverseForward(node *n1){
-    node *newNode = n1;
-
-    while(newNode != nullptr){
-        cout << newNode->data << " -> ";
-        newNode = newNode->next;
-    }
-    cout << "NULL";
-}
-
-
-node *insertAtBeginning(node *ptr, int val){
-    node *newNode = getNewNode(val);
-    newNode->next = ptr;
-
-    return newNode;
-}
-
-node *getLastNode(node *nodePtr){
-    if (nodePtr == nullptr){   // empty list
-        return nullptr;
-    }
-
-    while (nodePtr->next != nullptr){
-        nodePtr = nodePtr->next;
-    }
-
-    return nodePtr;         // last node
-}
-
-node *insertAtEnd(node *head, int val){
-    node *newNode = getNewNode(val);
+private:
+    node *head;
     
-    if(head == nullptr){
+    node *getNewNode(int val){
+        // allocate mem for node
+        node *newNode = new node;
+
+        // fill node structure
+        newNode->data = val;
+        newNode->next = nullptr;
+
+        // return this new node
         return newNode;
     }
     
-    node *lastNode = getLastNode(head);
-    lastNode->next = newNode;
-    
-    return head;
-}
+    node *getLastNode(){
+        if (head == nullptr){   // empty list
+            return nullptr;
+        }
 
+        node *nodePtr = head;
+        while (nodePtr->next != nullptr){
+            nodePtr = nodePtr->next;
+        }
 
-void freeMemory(node *head)
-{
-    node *temp;
-
-    while (head != nullptr){
-        temp = head;            // save current node
-        head = head->next;      // advance to next node
-        delete temp;             // free current node
+        return nodePtr;         // last node
     }
-}
 
-node *deleteFromStart(node *head){
-    if(head == nullptr){   // empty list
-        cout << "List is empty, cannot delete!" << endl;
-        return nullptr;
+public:
+    LinkedList(){
+        head = nullptr;
     }
     
-    node *temp = head;          // save current head
-    head = head->next;          // move head to next node
-    delete temp;                // free old head
+    ~LinkedList(){
+        freeMemory();
+    }
     
-    return head;                // return new head
-}
+    void insertAtBeginning(int val){
+        node *newNode = getNewNode(val);
+        newNode->next = head;
+        head = newNode;
+    }
+    
+    void insertAtEnd(int val){
+        node *newNode = getNewNode(val);
+        
+        if(head == nullptr){
+            head = newNode;
+            return;
+        }
+        
+        node *lastNode = getLastNode();
+        lastNode->next = newNode;
+    }
+    
+    void deleteFromStart(){
+        if(head == nullptr){
+            cout << "List is empty, cannot delete!" << endl;
+            return;
+        }
+        
+        node *temp = head;
+        head = head->next;
+        delete temp;
+    }
+    
+    void traverseForward(){
+        node *n1 = head;
+        
+        while(n1 != nullptr){
+            cout << n1->data << " -> ";
+            n1 = n1->next;
+        }
+        cout << "NULL";
+    }
+    
+    int nodesCount(){
+        node *ptr = head;
+        int count = 0;
+        while(ptr != nullptr){
+            ++count;
+            ptr = ptr->next;
+        }
+        return count;
+    }
+    
+    int getLastNodeData(){
+        int val = 0;
+        node *ptr = head;
+        while(ptr != nullptr){
+            val = ptr->data;
+            ptr = ptr->next;
+        }
+        return val;
+    }
+    
+    void freeMemory(){
+        node *temp;
+        
+        while (head != nullptr){
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
 
 
 int main(){
 
-    node *head = nullptr;
+    LinkedList list;
     
-    // Build initial 5 nodes using insertAtEnd
-    head = insertAtEnd(head, 10);
-    head = insertAtEnd(head, 20);
-    head = insertAtEnd(head, 30);
-    head = insertAtEnd(head, 40);
-    head = insertAtEnd(head, 50);
+    // Build initial 5 nodes
+    list.insertAtEnd(10);
+    list.insertAtEnd(20);
+    list.insertAtEnd(30);
+    list.insertAtEnd(40);
+    list.insertAtEnd(50);
 
-    // insert at beginning --> 110, 120, 130
-    head = insertAtBeginning(head, 110);
-    head = insertAtBeginning(head, 120);
-    head = insertAtBeginning(head, 130);
+    // insert at beginning
+    list.insertAtBeginning(110);
+    list.insertAtBeginning(120);
+    list.insertAtBeginning(130);
 
-    // insert at end --> 210, 220, 230
-    head = insertAtEnd(head, 210);
-    head = insertAtEnd(head, 220);
-    head = insertAtEnd(head, 230);
+    // insert at end
+    list.insertAtEnd(210);
+    list.insertAtEnd(220);
+    list.insertAtEnd(230);
 
-    head = deleteFromStart(head);
-    head = deleteFromStart(head);
-    
-    traverseForward(head);
+    list.traverseForward();
 
-    int totalNodes = nodesCount(head);
+    int totalNodes = list.nodesCount();
     cout << endl << "Total nodes = " << totalNodes;
 
-    int dataLastNode = getLastNodeData(head);
+    int dataLastNode = list.getLastNodeData();
     cout << endl << "Last node val = " << dataLastNode;
-
-    freeMemory(head);
-
-    head = nullptr;
 
     return 0;    
 }
