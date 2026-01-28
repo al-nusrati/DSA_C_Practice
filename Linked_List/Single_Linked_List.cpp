@@ -98,6 +98,32 @@ public:     // These are functions anyone can use
         delete temp;                // Destroy the old first car (free memory)
     }
     
+    // NEW METHOD: Remove the last node (remove last train car)
+    void deleteFromEnd(){
+        // SPECIAL CASE 1: Empty list - no cars to remove
+        if(head == nullptr){
+            cout << "List is empty, cannot delete!" << endl;
+            return;
+        }
+        
+        // SPECIAL CASE 2: Only one node - remove it and set head to null
+        if(head->next == nullptr){
+            delete head;
+            head = nullptr;
+            return;
+        }
+        
+        // NORMAL CASE: Find the second-to-last car
+        node *temp = head;
+        while(temp->next->next != nullptr){
+            temp = temp->next;      // Move forward
+        }
+        
+        // Now temp points to second-to-last car
+        delete temp->next;          // Delete the last car
+        temp->next = nullptr;       // Second-to-last car is now the last
+    }
+    
     // METHOD 4: Print all nodes from start to end (show entire train)
     void traverseForward(){
         node *n1 = head;    // Start from the first car
@@ -107,7 +133,7 @@ public:     // These are functions anyone can use
             cout << n1->data << " -> ";     // Print the number in this car
             n1 = n1->next;                  // Move to next car
         }
-        cout << "NULL";     // Show we reached the end
+        cout << "NULL" << endl;     // Show we reached the end
     }
     
     // METHOD 5: Count how many nodes exist (count train cars)
@@ -134,6 +160,26 @@ public:     // These are functions anyone can use
             ptr = ptr->next;        // Move to next car
         }
         return val;     // Return the last number we saw
+    }
+    
+    // NEW METHOD: Check if the list is empty
+    bool isEmpty(){
+        return (head == nullptr);   // Returns true if no cars in train
+    }
+    
+    // NEW METHOD: Search for a specific value in the list
+    bool searchData(int val){
+        node *temp = head;      // Start from first car
+        
+        // Check each car for the value
+        while(temp != nullptr){
+            if(temp->data == val){
+                return true;    // Found it!
+            }
+            temp = temp->next;  // Move to next car
+        }
+        
+        return false;   // Searched entire train, value not found
     }
     
     // METHOD 7: Delete ALL nodes (destroy entire train)
@@ -177,11 +223,23 @@ int main(){
 
     // Count how many cars in train
     int totalNodes = list.nodesCount();
-    cout << endl << "Total nodes = " << totalNodes;
+    cout << "Total nodes = " << totalNodes << endl;
 
     // Check what number is in the last car
     int dataLastNode = list.getLastNodeData();
-    cout << endl << "Last node val = " << dataLastNode;
+    cout << "Last node val = " << dataLastNode << endl;
+    
+    // Test isEmpty method
+    cout << "Is list empty? " << (list.isEmpty() ? "Yes" : "No") << endl;
+    
+    // Test searchData method
+    cout << "Search for 120: " << (list.searchData(120) ? "Found" : "Not found") << endl;
+    cout << "Search for 999: " << (list.searchData(999) ? "Found" : "Not found") << endl;
+    
+    // Test deleteFromEnd
+    cout << "\nDeleting from end..." << endl;
+    list.deleteFromEnd();
+    list.traverseForward();
 
     // When program ends, destructor automatically cleans up all nodes!
     return 0;    
