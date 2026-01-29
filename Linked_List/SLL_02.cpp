@@ -11,6 +11,7 @@ template <typename T>
 class linkedList {
 private:
     node<T> *head;
+    node<T> *tail;  // NEW: tail pointer
 
     node<T>* getNewNode(int pos){
         node<T> *newNode = new node<T>;
@@ -20,19 +21,26 @@ private:
     }
 
     node<T>* getLastNode(){
-        if (head == NULL){ return NULL; }
-        node<T> *nPtr = head;
-        while (nPtr->next != NULL){
-            nPtr = nPtr->next;
+        return tail;  // UPDATED: directly return tail
+    }
+
+    void traverseReverseHelper(node<T> *n) {
+        if(n == NULL) {
+            return;
         }
-        return nPtr;
+        traverseReverseHelper(n->next);
+        cout << n->data << " -> ";
     }
 
 public:
-    linkedList() { head = NULL; }
+    linkedList() { 
+        head = NULL; 
+        tail = NULL;  // UPDATED: initialize tail
+    }
     
     linkedList(const linkedList& other) {
         head = NULL;
+        tail = NULL;  // UPDATED: initialize tail
         node<T>* temp = other.head;
         while(temp != NULL) {
             insertAtEnd(temp->data);
@@ -46,16 +54,23 @@ public:
         node<T> *nNode = getNewNode(pos);
         nNode->next = head;
         head = nNode;
+        
+        if(tail == NULL) {  // UPDATED: if list was empty
+            tail = head;
+        }
     }
 
     void insertAtEnd(int pos) {
         node<T> *nNode = getNewNode(pos);
-        if(head == NULL){
+        
+        if(head == NULL){  // UPDATED: empty list
             head = nNode;
-            return ;
+            tail = nNode;
+            return;
         }
-        node<T> *lastNode = getLastNode();     
-        lastNode->next = nNode;           
+        
+        tail->next = nNode;  // UPDATED: use tail directly
+        tail = nNode;        // UPDATED: update tail
     }
 
     void insertAtAnyPos(int position, int val) {
@@ -67,13 +82,20 @@ public:
             insertAtBeginning(val);
             return;
         }
+        
         node<T> *nNode = getNewNode(val);
         node<T> *temp = head;
+        
         for(int i = 0; i < position - 1; i++) {
             temp = temp->next;
         }
+        
         nNode->next = temp->next;
         temp->next = nNode;
+        
+        if(nNode->next == NULL) {  // UPDATED: if inserted at end
+            tail = nNode;
+        }
     }
 
     void deleteFromStart() {
@@ -81,9 +103,14 @@ public:
             cout << "List is empty, cannot delete it!" << endl;
             return;     
         }
+        
         node<T> *temp = head;         
-        head = head->next;          
-        delete temp; 
+        head = head->next;
+        delete temp;
+        
+        if(head == NULL) {  // UPDATED: if list became empty
+            tail = NULL;
+        }
     }
 
     void deleteFromEnd() {
@@ -91,21 +118,26 @@ public:
             cout << "List is empty, cannot delete it!" << endl;
             return;
         }
-        if(head->next == NULL){
+        
+        if(head->next == NULL){  // UPDATED: only one node
             delete head;
-            head = nullptr;
+            head = NULL;
+            tail = NULL;
             return;
         }
+        
         node<T>* temp = head;
         while(temp->next->next != NULL){
             temp = temp->next;      
         }
+        
         delete temp->next;         
-        temp->next = nullptr; 
+        temp->next = NULL;
+        tail = temp;  // UPDATED: update tail
     }
 
-    void removeAtAnyPos(int position) {
-        if (head == nullptr) {
+    void deleteAtAnyPos(int position) {
+        if (head == NULL) {
             cout << "List is empty!" << endl;
             return;
         }
@@ -116,18 +148,43 @@ public:
         }
         
         node<T>* temp = head;
-        for (int i = 1; i < position - 1 && temp != nullptr; i++) {
+        for (int i = 1; i < position - 1 && temp != NULL; i++) {
             temp = temp->next;
         }
         
-        if (temp == nullptr || temp->next == nullptr) {
+        if (temp == NULL || temp->next == NULL) {
             cout << "Invalid position!" << endl;
             return;
         }
         
         node<T>* toDelete = temp->next;
         temp->next = toDelete->next;
+        
+        if(temp->next == NULL) {  // UPDATED: if deleted last node
+            tail = temp;
+        }
+        
         delete toDelete;
+    }
+
+    void reverse() {
+        if(head == NULL || head->next == NULL) {
+            return;
+        }
+        
+        node<T> *prev = NULL;
+        node<T> *current = head;
+        node<T> *next = NULL;
+        
+        tail = head;  // UPDATED: old head becomes tail
+        
+        while(current != NULL) {
+            next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
+        }
+        head = prev;
     }
 
     int nodeCount() {
@@ -154,13 +211,10 @@ public:
     }
 
     int getLastNodeData() {
-        int pos = 0;
-        node<T> *ptr = head;
-        while (ptr != NULL){
-            pos = ptr->data;
-            ptr = ptr->next;
+        if(tail == NULL) {
+            return 0;
         }
-        return pos;
+        return tail->data;  // UPDATED: use tail directly
     }
 
     bool isEmpty() { return (head == NULL); }
@@ -177,47 +231,34 @@ public:
     }
 
     void findMiddle() {
-    if(head == NULL) {
-        cout << "List is empty!" << endl;
-        return;
-    }
-    
-    node<T> *slow = head;
-    node<T> *fast = head;
-    
-    while(fast != NULL && fast->next != NULL) {
-        slow = slow->next;        // moves 1 step
-        fast = fast->next->next;  // moves 2 steps
-    }
-    
-    cout << "Middle element: " << slow->data << endl;
+        if(head == NULL) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        
+        node<T> *slow = head;
+        node<T> *fast = head;
+        
+        while(fast != NULL && fast->next != NULL) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        
+        cout << "Middle element: " << slow->data << endl;
     }
 
-    void reverse() {
-    if(head == NULL || head->next == NULL) {
-        return; // empty or single node, no need to reverse
-    }
-    
-    node<T> *prev = NULL;
-    node<T> *current = head;
-    node<T> *next = NULL;
-    
-    while(current != NULL) {
-        next = current->next;    // store next
-        current->next = prev;    // reverse the link
-        prev = current;          // move prev forward
-        current = next;          // move current forward
-    }
-    head = prev; // new head is last node
-    }
-    
     void traverseForward() {
         node<T> *n1 = head;
         while(n1 != NULL){
             cout << n1->data << " -> ";
             n1 = n1->next;
         }
-        cout << "List is Empty" << endl;
+        cout << "NULL" << endl;  // FIXED: was "List is Empty"
+    }
+
+    void traverseReverse() {
+        traverseReverseHelper(head);
+        cout << "NULL" << endl;
     }
 
     void freeMemory() {
@@ -227,22 +268,17 @@ public:
             head = head->next;
             delete temp;
         }
+        tail = NULL;  // UPDATED: reset tail
     }
 };
 
 
 int main (){
-
-    // 1st task
     linkedList<int> list;
-
-    // 2nd task
     linkedList<int> copyList(list);
 
-    // 3rd task
     cout << "Is list empty: " << (list.isEmpty() ? "Yes" : "No") << endl;
 
-    // 4th task
     list.insertAtEnd(1);
     list.insertAtEnd(2);
     list.insertAtEnd(3);
@@ -250,73 +286,43 @@ int main (){
     list.insertAtEnd(5);
     cout << "Inserted values 1-5 at the end." << endl;
 
-    // 5th task
     cout << "Is list empty: " << (list.isEmpty() ? "Yes" : "No") << endl;
-
-    // 6th task
     list.traverseForward();
 
-    // 7th task
     list.deleteFromStart();
     cout << "Deleted first element." << endl;
-
-    // 8th task
     list.traverseForward();
 
-    // 9th task
     list.insertAtBeginning(6);
     cout << "6 inserted at start." << endl;
-
-    // 10th task
     list.traverseForward();
 
-    // 11th task
     list.insertAtEnd(9);
     cout << "9 inserted at end." << endl;
-
-    // 12th task
     list.traverseForward();
 
-    // 13th task
     list.deleteFromEnd();
     cout << "Deleted last element." << endl;
-
-    // 14th task
     list.traverseForward();
 
-    // 15th task
-    list.removeAtAnyPos(3);
+    list.deleteAtAnyPos(3);
     cout << "Deleted element at position 3" << endl;
-
-    // 16th task
     list.traverseForward();
 
-    // 17th task
     list.insertAtAnyPos(4, 7);
     cout << "Inserted 7 at position 4." << endl;
-
-    // 18th task
     list.traverseForward();
 
-    // 19th task
     list.deleteFromStart();
-
-    // 20th task
     list.traverseForward();
 
-    // 21st task
-    list.removeAtAnyPos(2);
+    list.deleteAtAnyPos(2);
     cout << "Deleted element at position 2" << endl;
-
-    // 22nd task
     list.traverseForward();
 
-    // 23rd task
     list.deleteFromStart();
     list.deleteFromStart();
     list.deleteFromStart();
-
-    // 24th task
     list.traverseForward();
 
     return 0;
