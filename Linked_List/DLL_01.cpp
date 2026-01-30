@@ -106,26 +106,22 @@ public:
     }
 
     void deleteFromStart() {
-        if(head == nullptr) {
-            cout << "List is empty!" << endl;
-            return;
-        }
-        
-        node<T>* temp = head;
-        
-        if(head == tail) {  
-            head = tail = nullptr;
-        } else {
-            head = head->next;
-            head->prev = nullptr;
-        }
-        
-        delete temp;
+        if(!isEmpty()){
+            node<T>* temp = head;
+            if( head == tail) {  
+                head = tail = nullptr;
+            } else {
+                head = head->next;
+                head->prev = nullptr;
+            }
+            
+            delete temp;
+        }    
     }
 
     void deleteFromEnd() {
         if(head == nullptr) {
-            cout << "List is empty!" << endl;
+            cout << "Cannot delete from end, list is empty!" << endl;
             return;
         }
         
@@ -274,7 +270,7 @@ public:
 
     void traverseReverse() {
         node<T>* temp = tail;
-        while(temp != nullptr) {
+        while(temp != nullptr) { 
             cout << temp->data << " -> ";
             temp = temp->prev;
         }
