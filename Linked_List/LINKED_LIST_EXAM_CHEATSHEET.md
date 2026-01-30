@@ -177,7 +177,7 @@ void deleteFromEnd() {
     
     // Find second-to-last node
     node<T>* temp = head;
-    while(temp->next->next != NULL) {  // Stop at 2nd last
+    while(temp->next->next != NULL) {  // traverse & Stop at 2nd last
         temp = temp->next;
     }
     
@@ -185,7 +185,7 @@ void deleteFromEnd() {
     temp->next = NULL;        // Break link
     tail = temp;              // Update tail
 }
-```
+``` 
 
 **EXAM TRICK:**
 - **Key:** Must reach **SECOND-TO-LAST** node
