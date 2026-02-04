@@ -49,7 +49,7 @@ public:
     void insertAtBeginning(T val) {
         node<T>* newNode = getNewNode(val);
         
-        if(head == nullptr) {  // Empty list
+        if(head == nullptr) { 
             head = tail = newNode;
             return;
         }
@@ -62,7 +62,7 @@ public:
     void insertAtEnd(T val) {
         node<T>* newNode = getNewNode(val);
         
-        if(head == nullptr) {  // Empty list
+        if(head == nullptr) {  
             head = tail = newNode;
             return;
         }
@@ -90,7 +90,7 @@ public:
         
         node<T>* newNode = getNewNode(val);
         node<T>* temp = head;
-        
+        //---------------------------------------------
         for(int i = 1; i < position - 1; i++) {
             temp = temp->next;
         }
@@ -120,21 +120,17 @@ public:
     }
 
     void deleteFromEnd() {
-        if(head == nullptr) {
-            cout << "Cannot delete from end, list is empty!" << endl;
-            return;
+        if(!isEmpty()) { 
+            node<T>* temp = tail;
+            
+            if(head == tail) { 
+                head = tail = nullptr;
+            } else {
+                tail = tail->prev;
+                tail->next = nullptr;
+            }
+            delete temp;
         }
-        
-        node<T>* temp = tail;
-        
-        if(head == tail) { 
-            head = tail = nullptr;
-        } else {
-            tail = tail->prev;
-            tail->next = nullptr;
-        }
-        
-        delete temp;
     }
 
     void deleteAtAnyPos(int position) {
@@ -177,20 +173,14 @@ public:
         node<T>* current = head;
         node<T>* temp = nullptr;
         
-        // Swap head and tail
         tail = head;
         
         while(current != nullptr) {
-            // Swap next and prev pointers
             temp = current->prev;
             current->prev = current->next;
             current->next = temp;
-            
-            // Move to next node (which is prev now)
             current = current->prev;
         }
-        
-        // temp->prev is the new head
         if(temp != nullptr) {
             head = temp->prev;
         }
@@ -291,86 +281,17 @@ public:
 int main() {
     DoublyLinkedList<int> list;
 
-    // Test isEmpty
-    cout << "Is list empty: " << (list.isEmpty() ? "Yes" : "No") << endl;
-
-    // Insert at end
-    list.insertAtEnd(10);
-    list.insertAtEnd(20);
-    list.insertAtEnd(30);
-    list.insertAtEnd(40);
-    list.insertAtEnd(50);
-    cout << "Inserted 10, 20, 30, 40, 50 at end" << endl;
-
-    // Traverse forward
-    cout << "Forward: ";
-    list.traverseForward();
-
-    // Traverse backward
-    cout << "Backward: ";
-    list.traverseReverse();
-
-    // Insert at beginning
-    list.insertAtBeginning(110);
-    list.insertAtBeginning(120);
-    list.insertAtBeginning(130);
-    cout << "\nInserted 110, 120, 130 at beginning" << endl;
-    cout << "Forward: ";
-    list.traverseForward();
-
-    // Node count
-    cout << "\nTotal nodes: " << list.nodeCount() << endl;
-
-    // Get last node data
-    cout << "Last node data: " << list.getLastNodeData() << endl;
-
-    // Find middle
-    list.findMiddle();
-
-    // Get Nth node
-    cout << "3rd node: " << list.getNthNode(3) << endl;
-
-    // Search
-    cout << "Search 30: " << (list.searchData(30) ? "Found" : "Not Found") << endl;
-    cout << "Search 999: " << (list.searchData(999) ? "Found" : "Not Found") << endl;
-
-    // Insert at position
-    list.insertAtAnyPos(4, 999);
-    cout << "\nInserted 999 at position 4" << endl;
-    cout << "Forward: ";
-    list.traverseForward();
-
-    // Delete from start
-    list.deleteFromStart();
-    cout << "\nDeleted from start" << endl;
-    cout << "Forward: ";
-    list.traverseForward();
-
-    // Delete from end
+    list.insertAtBeginning(20);
+    list.insertAtBeginning(30);
+    list.insertAtBeginning(40);
+    list.insertAtBeginning(50);
+    list.insertAtBeginning(60);
+    list.insertAtBeginning(70);
+    list.insertAtEnd(80);
+    list.insertAtEnd(90);
     list.deleteFromEnd();
-    cout << "\nDeleted from end" << endl;
-    cout << "Forward: ";
-    list.traverseForward();
-
-    // Delete at position
-    list.deleteAtAnyPos(3);
-    cout << "\nDeleted at position 3" << endl;
-    cout << "Forward: ";
-    list.traverseForward();
-
-    // Reverse
-    list.reverse();
-    cout << "\nReversed list" << endl;
-    cout << "Forward: ";
-    list.traverseForward();
-    cout << "Backward: ";
+    list.deleteFromStart();
     list.traverseReverse();
-
-    // Copy constructor test
-    DoublyLinkedList<int> copyList(list);
-    cout << "\nCopy of list:" << endl;
-    cout << "Forward: ";
-    copyList.traverseForward();
 
     return 0;
 }
