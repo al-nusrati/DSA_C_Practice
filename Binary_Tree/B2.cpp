@@ -68,7 +68,6 @@ void freeTree(node *root){
 // bst = binary search tree
 int main(){
     int tree[12] = { 50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56 };
-    //int tree[3] = {10, 8, 12};
 
     node* root = nullptr;
 
@@ -83,26 +82,23 @@ int main(){
 
     int test = 0;
 
-    // root = bst_insert(root, 10); // nullptr , 10
-
-    // cout << "\n<---- 2nd number ---->\n";
-    // root = bst_insert(root, 8);   // root , 8
-
-    // cout << "\n<---- 3rd number ---->\n";
-    // root = bst_insert(root, 5);   // root , 5
-
-    // cout << "\n<---- 4th number ---->\n";
-    // root = bst_insert(root, 3);   // root , 3
-
-    // //--------------------------- greater than value
-    // cout << "\n<---- 5th number ---->\n";
-    // root = bst_insert(root, 50);   // root , 50
-
-    // cout << "\n<---- 6th number ---->\n";
-    // root = bst_insert(root, 60);   // root , 60
     root = nullptr;
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // //  LEFT CHECK
