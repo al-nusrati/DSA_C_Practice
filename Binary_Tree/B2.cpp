@@ -65,26 +65,62 @@ void freeTree(node *root){
     }
 }
 
-// bst = binary search tree
-int main(){
-    int tree[12] = { 50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56 };
-
-    node* root = nullptr;
-
-    for(int val : tree){
-        root = bst_insert(root, val);
-
+void findNode(node *root, int val){
+    if(root == nullptr){
+        cout << "Root is null" << endl;
+        return;
+    }
+    node *current = root;
+    while(current != nullptr){
+        if(current->data == val){
+            cout << "Node found: " << current->data << endl;
+            return;
+        }
+        if(val < current->data){
+            cout << "Going left from node: " << current->data << endl;
+            current = current->left;
+        }
+        else{
+            cout << "Going right from node: " << current->data << endl;
+            current = current->right;
+        }
     }
 
+    cout << "Node not found" << endl;
+}
+
+// bst = binary search tree
+int main() {
+    node* root = nullptr;
+
+    // Insert values into BST
+    root = bst_insert(root, 50);
+    root = bst_insert(root, 30);
+    root = bst_insert(root, 70);
+    root = bst_insert(root, 20);
+    root = bst_insert(root, 40);
+    root = bst_insert(root, 60);
+    root = bst_insert(root, 80);
+
+    // Inorder traversal (sorted output)
+    cout << "Inorder traversal: ";
     sort(root);
+    cout << endl;
 
+    // Search tests
+    cout << "\nSearching for 40:\n";
+    findNode(root, 40);
+
+    cout << "\nSearching for 90:\n";
+    findNode(root, 90);
+
+    // Free memory
     freeTree(root);
-
-    int test = 0;
-
     root = nullptr;
+
     return 0;
 }
+
 
 
 
