@@ -50,9 +50,11 @@ node *bst_insert(node *btNode, int val){
 
 void sort(node *root) {
     if(root) {                  // ------- (end condition)
+        // cout << root->data << " ";   //preorder: root, left, right
         sort(root->left);
-        cout << root->data << " ";
+        cout << root->data << " ";  //inorder: left, root, right
         sort(root->right);
+        // cout << root->data << " ";   //postorder: left, right, root
     }
 }
 
