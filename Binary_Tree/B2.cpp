@@ -67,29 +67,25 @@ void freeTree(node *root){
     }
 }
 
+
 void findNode(node *root, int val){
-    if(root == nullptr){
-        cout << "Root is null" << endl;
+    if(root == NULL){
+        cout << "No Node found" << endl;
         return;
     }
-    node *current = root;
-    while(current != nullptr){
-        if(current->data == val){
-            cout << "Node found: " << current->data << endl;
-            return;
-        }
-        if(val < current->data){
-            cout << "Going left from node: " << current->data << endl;
-            current = current->left;
-        }
-        else{
-            cout << "Going right from node: " << current->data << endl;
-            current = current->right;
-        }
+    if(root->data == val){
+        cout << "Node found: " << root->data << endl;
     }
-
-    cout << "Node not found" << endl;
+    if(val < root->data){
+        cout << "Going left from node: " << root->data << "\n";
+        return findNode(root->left, val);
+    }
+    else{
+        cout << "Going right from node: " << root->data << "\n";
+        return findNode(root->right, val);
+    }
 }
+
 
 // bst = binary search tree
 int main() {
