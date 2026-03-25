@@ -117,3 +117,46 @@ slprj/
 notes.txt
 todo.txt
 *.private
+
+#######################################
+# VISUAL STUDIO SPECIFIC (CLEAN UP SORTING1)
+#######################################
+
+# User-specific files (The .user file highlighted in your image)
+*.vcxproj.user
+*.sqlproj.user
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio 2015/2017/2019/2022 cache & hidden folders
+.vs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# Visual Studio Build Output
+*.exe
+*.pdb
+*.ilk
+*.aps
+*.idb
+*.intermediate.manifest
+*.res
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.rsp
+*.pgc
+*.pgd
+*.meta
+*.tlog
+
+# Copilot and Intellisense Database files (The .db files in your image)
+*.db
+*.opendb
+
+# Visual Studio / vcpkg temporary artifacts
+0
