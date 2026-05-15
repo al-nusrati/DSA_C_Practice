@@ -1,246 +1,120 @@
 #include <iostream>
 #include <string>
+#include <list>
+#include <utility>      // for std::pair
+
 using namespace std;
 
-// ==========================================
-// TEMPLATED INPUT VALIDATION (Elite Tier)
-// ==========================================
-template <typename T>
-T getValidInput(string prompt) {
-    T value;
-    while (true) {
-        cout << prompt;
-        if (cin >> value) {
-            return value;
-        }
-        cout << "Error: Invalid input! Please enter the correct data type.\n";
-        cin.clear();
-        cin.ignore(10000, '\n');
-    }
-}
-
-// --- 1. Node Structure (Chaining Bucket Node) ---
-struct node {
-    int data;
-    node* next;
-};
-
-// --- 2. HashTable Class Definition ---
-class HashTable {
+// ─── HASHMAP using std::list ───────────────────────
+class HashMap {
 private:
-    static const int DEFAULT_SIZE = 10;
-    node** table;       // Array of node pointers (each index = a bucket)
-    int tableSize;
-    int count;          // Total elements stored
+    static const int TABLE_SIZE = 10;
+    
+    // Each bucket is a list of key-value pairs
+    list<pair<int, string>> buckets[TABLE_SIZE];
 
-    // ==========================================
-    // PRIVATE HELPER FUNCTIONS (The Logic Core)
-    // ==========================================
-
-    // --- Hash Function (Division Method) ---
     int hashFunction(int key) {
-        // Handles negative keys safely using modulo arithmetic
-        return ((key % tableSize) + tableSize) % tableSize;
-    }
-
-    // --- Create a new chain node ---
-    node* createNode(int val) {
-        node* newNode = new node;
-        newNode->data  = val;
-        newNode->next  = nullptr;
-        return newNode;
-    }
-
-    // --- Free an entire chain at a bucket ---
-    void freeChain(node* head) {
-        while (head) {
-            node* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
-
-    // --- Internal Search (returns the node ptr for reuse) ---
-    node* searchNode(int val) {
-        int idx  = hashFunction(val);
-        node* cur = table[idx];
-
-        while (cur) {
-            if (cur->data == val) return cur;   // Found
-            cur = cur->next;
-        }
-        return nullptr;     // Not found
+        return key % TABLE_SIZE;
     }
 
 public:
-    // ==========================================
-    // PUBLIC INTERFACE (Wrappers)
-    // ==========================================
+    void insert(int key, string value) {
+        int index = hashFunction(key);
+        auto& bucket = buckets[index];
 
-    // --- Constructor ---
-    HashTable(int size = DEFAULT_SIZE) {
-        tableSize = (size > 0) ? size : DEFAULT_SIZE;
-        count     = 0;
-        table     = new node*[tableSize];
+        cout << "-> Bucket[" << index << "] : ";
 
-        // Initialize all buckets to nullptr
-        for (int i = 0; i < tableSize; i++)
-            table[i] = nullptr;
-    }
-
-    // --- Destructor ---
-    ~HashTable() {
-        for (int i = 0; i < tableSize; i++)
-            freeChain(table[i]);
-        delete[] table;
-        table = nullptr;
-    }
-
-    // ==========================================
-    // CORE OPERATIONS
-    // ==========================================
-
-    // --- Insert ---
-    void insert(int val) {
-        // Reject duplicates (set semantics)
-        if (searchNode(val)) {
-            cout << "Warning: " << val << " already exists. Duplicates not allowed.\n";
-            return;
-        }
-
-        int    idx     = hashFunction(val);
-        node*  newNode = createNode(val);
-
-        // Prepend to chain (O(1) insertion)
-        newNode->next = table[idx];
-        table[idx]    = newNode;
-        count++;
-
-        cout << "Inserted " << val << " at bucket [" << idx << "]\n";
-    }
-
-    // --- Delete ---
-    bool remove(int val) {
-        int    idx  = hashFunction(val);
-        node*  cur  = table[idx];
-        node*  prev = nullptr;
-
-        while (cur) {
-            if (cur->data == val) {
-                // Unlink the node
-                if (prev) prev->next = cur->next;    // Middle / Tail
-                else       table[idx] = cur->next;   // Head of chain
-
-                delete cur;
-                count--;
-                cout << "Deleted " << val << " from bucket [" << idx << "]\n";
-                return true;
+        // Search if key already exists → update
+        for (auto& p : bucket) {
+            if (p.first == key) {
+                p.second = value;
+                cout << "Updated key " << key << " -> " << value << "\n";
+                return;
             }
-            prev = cur;
-            cur  = cur->next;
         }
 
-        cout << "Delete failed: " << val << " not found.\n";
-        return false;   // Element not found
+        // Key not found → insert new pair at front
+        bucket.emplace_front(key, value);
+        cout << "Inserted (" << key << ", " << value << ")\n";
     }
 
-    // --- Search (Reusability fix: returns bool, printing done outside) ---
-    bool search(int val) {
-        return searchNode(val) != nullptr;
+    void search(int key) {
+        int index = hashFunction(key);
+        const auto& bucket = buckets[index];
+
+        for (const auto& p : bucket) {
+            if (p.first == key) {
+                cout << "FOUND: Key=" << key 
+                     << " Value=" << p.second 
+                     << " at Bucket[" << index << "]\n";
+                return;
+            }
+        }
+        cout << "NOT FOUND: Key=" << key << "\n";
     }
 
-    // --- isEmpty ---
-    bool isEmpty() { return (count == 0); }
+    void deleteItem(int key) {
+        int index = hashFunction(key);
+        auto& bucket = buckets[index];
 
-    // --- Display entire table with chains ---
+        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+            if (it->first == key) {
+                bucket.erase(it);
+                cout << "DELETED: Key=" << key 
+                     << " from Bucket[" << index << "]\n";
+                return;
+            }
+        }
+        cout << "NOT FOUND: Key=" << key 
+             << " — nothing deleted\n";
+    }
+
     void display() {
-        cout << "\n--- Hash Table (Size: " << tableSize
-             << " | Elements: " << count << ") ---\n";
-
-        for (int i = 0; i < tableSize; i++) {
-            cout << "Bucket [" << i << "] -> ";
-
-            if (!table[i]) {
-                cout << "NULL\n";
-                continue;
+        cout << "\n=== HashMap State ===\n";
+        for (int i = 0; i < TABLE_SIZE; i++) {
+            cout << "Bucket[" << i << "]: ";
+            
+            if (buckets[i].empty()) {
+                cout << "empty";
+            } else {
+                for (const auto& p : buckets[i]) {
+                    cout << "(" << p.first << ", " << p.second << ") -> ";
+                }
+                cout << "NULL";
             }
-
-            node* cur = table[i];
-            while (cur) {
-                cout << cur->data;
-                if (cur->next) cout << " -> ";
-                cur = cur->next;
-            }
-            cout << " -> NULL\n";
+            cout << "\n";
         }
-        cout << endl;
+        cout << "====================\n";
+    }
+
+    bool isEmpty() {
+        for (int i = 0; i < TABLE_SIZE; i++) {
+            if (!buckets[i].empty()) 
+                return false;
+        }
+        return true;
     }
 };
 
-// ==========================================
-// MAIN FUNCTION
-// ==========================================
+// ─── MAIN ──────────────────────────────────────────
 int main() {
-    HashTable ht(7);    // Prime-sized table = better distribution
+    HashMap hm;
 
-    cout << "========================================\n";
-    cout << "       Hash Table ADT - Demo            \n";
-    cout << "========================================\n";
+    hm.insert(105, "Jawad");
+    hm.insert(205, "Rujman");   // collision with 105
+    hm.insert(305, "Raiyan");   // collision again
+    hm.insert(42,  "Musab");
+    hm.insert(73,  "Ahmed");
 
-    // --- Insertions ---
-    cout << "\n--- Inserting Nodes ---\n";
-    ht.insert(10);
-    ht.insert(20);
-    ht.insert(35);
-    ht.insert(7);
-    ht.insert(14);
-    ht.insert(21);
-    ht.insert(99);
+    hm.display();
 
-    ht.display();
+    hm.search(205);
+    hm.search(99);
 
-    // --- Collision Demonstration ---
-    cout << "--- Inserting Collision Values (should chain) ---\n";
-    ht.insert(28);   // 28 % 7 = 0, collides with 7 (7%7=0) and 21 (21%7=0)
-    ht.display();
+    hm.deleteItem(205);
+    hm.search(205);
 
-    // --- Duplicate Rejection ---
-    cout << "--- Duplicate Rejection Test ---\n";
-    ht.insert(10);   // Should warn and reject
-    cout << endl;
+    hm.display();
 
-    // --- Search ---
-    cout << "--- Searching ---\n";
-    if (ht.search(14))  cout << "Node 14  FOUND.\n";
-    else                cout << "Node 14  NOT found.\n";
-
-    if (ht.search(55))  cout << "Node 55  FOUND.\n";
-    else                cout << "Node 55  NOT found.\n";
-    cout << endl;
-
-    // --- Deletion ---
-    cout << "--- Deleting Nodes ---\n";
-    ht.remove(21);          // Head of a chain
-    ht.remove(28);          // Middle/tail of a chain
-    ht.remove(999);         // Non-existent
-    ht.display();
-
-    // --- isEmpty Check ---
-    cout << "--- isEmpty Check ---\n";
-    cout << "Table is " << (ht.isEmpty() ? "EMPTY" : "NOT empty") << ".\n\n";
-
-    // --- Interactive Input Test ---
-    cout << "--- Interactive Input Test (Using Template) ---\n";
-    int userVal = getValidInput<int>("Enter an integer to insert into Hash Table: ");
-    ht.insert(userVal);
-
-    if (ht.search(userVal))
-        cout << "Confirmed: " << userVal << " is in the table.\n";
-
-    ht.display();
-
-    cout << "--- Destructor will run automatically here ---\n";
-
-    system("pause>0");
     return 0;
 }
