@@ -97,7 +97,7 @@ public:
 
         // Step 2: Push all characters as leaf nodes into the Min-Heap
         priority_queue<HuffmanNode*, vector<HuffmanNode*>, Compare> pq; // Min-Heap based on frequency, its structure is behind the scenes a binary tree where each node is a HuffmanNode* and the heap property is maintained based on the frequency of the nodes. The Compare struct defines how to compare two HuffmanNode* for ordering in the heap.  if parent freq > child freq → swap, otherwise keep as is. This ensures that the node with the smallest frequency is always at the top of the heap.
-
+        
         //------------------------------
         // The loop iterates through each key-value pair in the freqMap, where the key is a character and the value is its frequency. For each pair, it creates a new HuffmanNode with the character and its frequency, and pushes that node into the priority queue (Min-Heap). This sets up the initial heap with all characters as leaf nodes, ready for the merging process to build the Huffman Tree.
         // The time complexity of this loop is O(M log M), where M is the number of unique characters, because each insertion into the priority queue takes O(log M) time and we do it for each of the M unique characters.
